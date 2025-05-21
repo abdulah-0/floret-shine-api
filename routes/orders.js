@@ -1,10 +1,16 @@
 // routes/orders.js
-const express = require('express');
-const router  = express.Router();
-const pool    = require('../db');
-const multer  = require('multer');
-const path    = require('path');
-const fs      = require('fs');
+import { Router }        from 'express';
+import pool              from '../db.js';
+import multer            from 'multer';
+import path              from 'path';
+import fs                from 'fs';
+import { fileURLToPath } from 'url';
+
+const router = Router();
+
+// Fix __dirname in ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname  = path.dirname(__filename);
 
 // Ensure the uploads/payments directory exists
 const paymentsDir = path.join(__dirname, '..', 'public', 'uploads', 'payments');
@@ -24,7 +30,7 @@ const upload = multer({ storage });
 
 // ── GET /api/orders ─────────────────────────────────────────────────────────────
 // List all orders (admin view)
-router.get('/', async (req, res) => {
+router.get('/', async (_req, res) => {
   try {
     const { rows } = await pool.query(`
       SELECT
@@ -54,9 +60,9 @@ router.get('/', async (req, res) => {
 // ── PATCH /api/orders/:id/status ────────────────────────────────────────────────
 // Update a single order's status
 router.patch('/:id/status', async (req, res) => {
-  const { id } = req.params;
+  const { id }     = req.params;
   const { status } = req.body;
-  const valid = ['pending', 'shipped', 'canceled'];
+  const valid      = ['pending', 'shipped', 'canceled'];
 
   if (!valid.includes(status)) {
     return res.status(400).json({ error: 'Invalid status' });
@@ -124,7 +130,7 @@ router.post('/', upload.single('paymentPhoto'), async (req, res) => {
   let orderItems;
   try {
     orderItems = JSON.parse(items);
-  } catch (e) {
+  } catch {
     return res.status(400).json({ error: 'Invalid items payload' });
   }
 
@@ -133,7 +139,7 @@ router.post('/', upload.single('paymentPhoto'), async (req, res) => {
     ? `/uploads/payments/${req.file.filename}`
     : null;
 
-  // Compute total amount (if your items include price)
+  // Compute total amount
   const amountPaid = orderItems.reduce(
     (sum, item) => sum + (Number(item.price) || 0) * item.quantity,
     0
@@ -182,4 +188,4 @@ router.post('/', upload.single('paymentPhoto'), async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

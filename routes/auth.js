@@ -1,12 +1,13 @@
 // routes/auth.js
-const express = require('express');
-const router  = express.Router();
-const pool    = require('../db');
-const bcrypt  = require('bcrypt');
-const jwt     = require('jsonwebtoken');
+import { Router } from 'express';
+import pool from '../db.js';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'replace_with_env_secret';
-const SALT_ROUNDS = 10;
+const router = Router();
+
+const JWT_SECRET   = process.env.JWT_SECRET || 'replace_with_env_secret';
+const SALT_ROUNDS  = 10;
 
 // REGISTER
 router.post('/register', async (req, res) => {
@@ -47,7 +48,6 @@ router.post('/login', async (req, res) => {
     if (!match) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
-    // issue token with role in payload
     const token = jwt.sign(
       { sub: user.id, email: user.email, role: user.role },
       JWT_SECRET,
@@ -60,4 +60,4 @@ router.post('/login', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

@@ -1,17 +1,10 @@
 // server.js
-console.log('👀 server.js loaded—about to boot Express…');
 
-process.on('uncaughtException', err => {
-  console.error('UNCAUGHT EXCEPTION:', err);
-});
-process.on('unhandledRejection', err => {
-  console.error('UNHANDLED REJECTION:', err);
-});
 require('dotenv').config();
-const express     = require('express');
-const cors        = require('cors');
-const compression = require('compression');
-const path        = require('path');
+import express     from 'express';
+import cors        from 'cors';
+import compression from 'compression';
+import dotenv      from 'dotenv';
 import pool from './db.js';
 
 const productsRouter = require('./routes/products');
@@ -63,3 +56,12 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
 
+
+console.log('👀 server.js loaded—about to boot Express…');
+
+process.on('uncaughtException', err => {
+  console.error('UNCAUGHT EXCEPTION:', err);
+});
+process.on('unhandledRejection', err => {
+  console.error('UNHANDLED REJECTION:', err);
+});

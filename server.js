@@ -4,6 +4,7 @@ const express     = require('express');
 const cors        = require('cors');
 const compression = require('compression');
 const path        = require('path');
+import pool from './db.js';
 
 const productsRouter = require('./routes/products');
 const ordersRouter   = require('./routes/orders');

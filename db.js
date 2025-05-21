@@ -1,20 +1,24 @@
 // db.js
-require('dotenv').config();
-const { Pool } = require('pg');
+import pkg from 'pg';
+const { Pool } = pkg;
 
-// If you’re using a DATABASE_URL env var (e.g. on Heroku):
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  // ssl: { rejectUnauthorized: false }, // uncomment if your DB requires SSL
-});
+let pool;
 
-// Or, if you set individual DB_* vars, you could instead do:
-// const pool = new Pool({
-//   host:     process.env.DB_HOST,
-//   port:     process.env.DB_PORT,
-//   user:     process.env.DB_USER,
-//   password: process.env.DB_PASSWORD,
-//   database: process.env.DB_NAME,
-// });
+if (process.env.DATABASE_URL) {
+  // Running on Heroku
+  pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }
+  });
+} else {
+  // Local development
+  pool = new Pool({
+    user:     process.env.PGUSER,
+    password: process.env.PGPASSWORD,
+    host:     process.env.PGHOST,
+    database: process.env.PGDATABASE,
+    port:     process.env.PGPORT,
+  });
+}
 
-module.exports = pool;
+export default pool;
